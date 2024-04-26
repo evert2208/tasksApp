@@ -2,16 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-const colorSeed = Color.fromARGB(255, 11, 18, 97);
-const scaffoldBackgroundColor = Color(0xFFF8F7F7);
+const colorSeed = Color.fromARGB(255, 11, 14, 206);
+// const scaffoldBackgroundColor = Color(0xFFF8F7F7);
 
 class AppTheme {
+
+final bool isDarkmode;
+AppTheme({
+   
+    this.isDarkmode = false,
+  });
 
   ThemeData getTheme() => ThemeData(
     ///* General
     
     colorSchemeSeed: colorSeed,
-    // brightness: Brightness.dark,
+    brightness: isDarkmode ? Brightness.dark : Brightness.light,
 
     ///* Texts
     textTheme: TextTheme(
@@ -24,10 +30,18 @@ class AppTheme {
     ),
 
     ///* Scaffold Background Color
-    scaffoldBackgroundColor: scaffoldBackgroundColor,
+    // scaffoldBackgroundColor: scaffoldBackgroundColor,
     
 
     ///* Buttons
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: colorSeed,
+       shape: CircleBorder(),
+       elevation: 2.5,
+       foregroundColor: Colors.white,
+       
+       
+    ),
     filledButtonTheme: FilledButtonThemeData(
       style: ButtonStyle(
         textStyle: MaterialStatePropertyAll(
@@ -39,10 +53,18 @@ class AppTheme {
 
     ///* AppBar
     appBarTheme: AppBarTheme(
-      color: scaffoldBackgroundColor,
+      // color: scaffoldBackgroundColor,
       titleTextStyle: GoogleFonts.montserratAlternates()
-        .copyWith( fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black ),
+        .copyWith( fontSize: 25, fontWeight: FontWeight.bold),
+        centerTitle: false
     )
+  );
+
+  AppTheme copyWith({
+    bool? isDarkmode
+  }) => AppTheme(
+    
+    isDarkmode: isDarkmode ?? this.isDarkmode,
   );
 
 }

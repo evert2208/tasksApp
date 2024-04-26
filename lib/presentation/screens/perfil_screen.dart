@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tasks_app/presentation/providers/theme_provider.dart';
 
 
 class PerfilScreen extends StatelessWidget {
@@ -8,7 +10,7 @@ class PerfilScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final scaffoldKey = GlobalKey<ScaffoldState>();
+    
 
     return Scaffold(
      
@@ -18,24 +20,34 @@ class PerfilScreen extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            title: Text('Seetings'),
+            title: const Text('Seetings'),
           ),
-      body: const _PerfilScreen(),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('user'),
-        icon: const Icon( Icons.add ),
-        onPressed: () {},
-      ),
+      body: const _PerfilView(),
+      
     );
   }
 }
 
 
-class _PerfilScreen extends StatelessWidget {
-  const _PerfilScreen();
+class _PerfilView extends ConsumerWidget {
+  const _PerfilView();
 
   @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text('Perfil'));
+  Widget build(BuildContext context, ref) {
+    final isDarkmode = ref.watch( themeNotifierProvider ).isDarkmode;
+    return ListView(
+      physics: const ClampingScrollPhysics(),
+      children: [
+        SwitchListTile(
+          title: const Text('Theme Mode'),
+          subtitle: Text(isDarkmode?'Dark':'Light'),
+          value: isDarkmode,
+          onChanged: (value){
+            ref.read( themeNotifierProvider.notifier )
+                .toggleDarkmode();
+          },
+        ),
+      ]
+    );
   }
 }

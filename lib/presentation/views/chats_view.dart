@@ -9,14 +9,10 @@ class ChatView extends StatelessWidget {
 
     final scaffoldKey = GlobalKey<ScaffoldState>();
 
-    return Scaffold(
+    return const Scaffold(
       
-      body: const _ChatView(),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('Chat'),
-        icon: const Icon( Icons.add ),
-        onPressed: () {},
-      ),
+      body: _ChatView(),
+      
     );
   }
 }
