@@ -1,0 +1,4 @@
+
+
+
+class TaskNotFound implements Exception {}

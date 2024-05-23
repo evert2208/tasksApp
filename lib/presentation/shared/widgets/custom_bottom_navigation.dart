@@ -42,11 +42,11 @@ class CustomBottomNavigation extends StatelessWidget {
       items: const [
         BottomNavigationBarItem(
           icon: Icon( Icons.home ),
-          label: 'Home'
+          label: 'Inicio'
         ),
         BottomNavigationBarItem(
           icon: Icon( Icons.task),
-          label: 'Tasks'
+          label: 'Tareas'
         ),
         BottomNavigationBarItem(
           icon: Icon( Icons.messenger ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tasks_app/presentation/shared/custom_bottom_navigation.dart';
+import 'package:tasks_app/presentation/shared/widgets/custom_bottom_navigation.dart';
 import 'package:tasks_app/presentation/views/chats_view.dart';
 import 'package:tasks_app/presentation/views/home_view.dart';
 import 'package:tasks_app/presentation/views/tasks_view.dart';

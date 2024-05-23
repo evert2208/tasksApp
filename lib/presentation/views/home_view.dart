@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tasks_app/presentation/shared/custom_appbar.dart';
+import 'package:tasks_app/presentation/shared/widgets/custom_appbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
