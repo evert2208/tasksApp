@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tasks_app/config/router/app_router_notifier.dart';
 import 'package:tasks_app/presentation/providers/auth_provider.dart';
+import 'package:tasks_app/presentation/screens/chat_screen.dart';
 import 'package:tasks_app/presentation/screens/check_auth_status_screen.dart';
 import 'package:tasks_app/presentation/screens/home_screen.dart';
 import 'package:tasks_app/presentation/screens/login_screen.dart';
@@ -57,6 +58,13 @@ return GoRouter(
         ),
       ),
     
+    ///* chats Routes
+    GoRoute(
+        path: '/chat/:id', 
+        builder: (context, state) => ChatScreen(
+          chatId: state.pathParameters['id'] ?? 'no-id',
+        ),
+      ),
     ],
 
     redirect: (context, state) {

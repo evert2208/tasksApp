@@ -29,12 +29,12 @@ class CheckAuthStatusScreen extends StatelessWidget {
           ),
           
           const Padding(
-            padding: EdgeInsets.all(16.0), // Ajusta el padding según sea necesario
+            padding: EdgeInsets.all(16.0), 
             child: Text(
-              'from Evert H', // El texto que quieres mostrar al final
+              'from Evert H',
               style: TextStyle(
-                fontSize: 18, // Ajusta el tamaño de la fuente según sea necesario
-                color: Colors.black, // Ajusta el color según sea necesario
+                fontSize: 18, 
+                color: Colors.black, 
               ),
               textAlign: TextAlign.center,
             ),

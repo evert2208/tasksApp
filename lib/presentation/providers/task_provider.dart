@@ -30,12 +30,35 @@ class TaskNotifier extends StateNotifier<TaskState> {
     loadtask();
   }
 
+  Task newEmptyTask() {
+    return Task(
+      id: 'new', 
+      titulo: '', 
+      descripcion: '',
+      estado: true,
+      user: '',
+      userCreate: '',
+      fechaInicio: DateTime.now(),
+      // fechaFin: DateTime.now(),
+      direccion: '',
+      // comentarios: '',
+      // evidencia: []
 
+    );
+  }
 
 
   Future<void> loadtask() async {
 
     try {
+
+       if ( state.id == 'new' ) {
+        state = state.copyWith(
+          isLoading: false,
+          task: newEmptyTask(),
+        );  
+        return;
+      }
 
       final task = await tasksRepository.getTaskById(state.id);
 

@@ -34,5 +34,16 @@ class TasksRepositoryImpl extends TasksRepository {
   Future<List<Task>> getTasksByEstado(String estado) {
     return datasource.getTasksByEstado(estado);
   }
-
+  
+  @override
+  Future<String> getAnswerGemini() {
+    return datasource.getAnswerGemini();
+  }
+  
+  @override
+  Future<List<Tasks>> getTasks() {
+    return datasource.getTasks();
+  }
+  
+  
 }

@@ -81,6 +81,35 @@ class TasksNotifier extends StateNotifier<TasksState> {
 
   }
 
+   Future getTasks() async {
+   
+    
+    if ( state.isLoading ) return;
+    state = state.copyWith( isLoading: true );
+
+
+    final tasks = await tasksRepository
+      .getTasks();
+    
+    
+    if ( tasks.isEmpty) {
+      state = state.copyWith(
+        isLoading: false,
+       tasks: state.tasks,
+       listTasks: []
+      );
+      return;
+    }
+
+    state = state.copyWith(
+      isLoading: false,
+      tasks: state.tasks,
+      listTasks: [...tasks]
+    );
+   
+
+  }
+
 }
 
 
@@ -91,18 +120,22 @@ class TasksState {
 
   final bool isLoading;
   final List<Task> tasks;
+  final List<Tasks> listTasks;
 
   TasksState({
     this.isLoading = false, 
-    this.tasks = const[]
+    this.tasks = const[],
+    this.listTasks = const[],
   });
 
   TasksState copyWith({
     bool? isLoading,
     List<Task>? tasks,
+    List<Tasks>? listTasks
   }) => TasksState(
     isLoading: isLoading ?? this.isLoading,
     tasks: tasks ?? this.tasks,
+    listTasks: listTasks ?? this.listTasks
   );
 
 }

@@ -55,9 +55,9 @@ class TaskFormNotifier extends StateNotifier<TaskFormState> {
     'titulo': state.titulo.value,
     'descripcion': state.descripcion,
     'direccion' : state.direccion,
-    'estado': state.estado ? 'abierto' : 'cerrado',
-    'fechaInicio': state.fechaInicio.toIso8601String(),
-    'fechaFin': state.fechaFin?.toIso8601String(),
+    'estado': state.estado,
+    'fechaInicio':  state.fechaInicio.toIso8601String(),
+    'fechaFin': state.fechaFin,
     'comentarios': state.comentarios,
     // 'evidencia': state.evidencia,
       'evidencia': state.evidencia.map(
@@ -89,77 +89,62 @@ class TaskFormNotifier extends StateNotifier<TaskFormState> {
   }
 
 
-  // void onTitleChanged( String value ) {
+  void onTitleChanged( String value ) {
+    state = state.copyWith(
+      titulo: Title.dirty(value),
+      isFormValid: Formz.validate([
+        Title.dirty(value),
+        // Date.dirty(state.fechaInicio.value),
+          // Date.dirty(state.fechaFin?.value)
+      ])
+    );
+  }
+
+  
+  void onComentariosChanged( String comentarios) {
+    state = state.copyWith(
+      comentarios: comentarios
+    );
+  }
+
+   void onDescripcionChanged( String descripcion) {
+    state = state.copyWith(
+      descripcion: descripcion
+    );
+  }
+ void onDireccionChanged( String direccion) {
+    state = state.copyWith(
+      direccion: direccion
+    );
+  }
+  void onEstadoChanged( bool estado) {
+    state = state.copyWith(
+      estado: estado
+    );
+  }
+  // void onDateChanged( DateTime value ) {
   //   state = state.copyWith(
-  //     title: Title.dirty(value),
-  //     isFormValid: Formz.validate([
-  //       Title.dirty(value),
-  //       Slug.dirty(state.slug.value),
-  //       Price.dirty(state.price.value),
-  //       Stock.dirty(state.inStock.value),
-  //     ])
+  //     fechaFin: Date.dirty(value),
+  //      isFormValid: Formz.validate([
+  //         Title.dirty(state.titulo.value),
+  //       // Date.dirty(state.fechaInicio.value),
+  //         Date.dirty(value),
+  //       ]),
   //   );
   // }
 
-  // void onSlugChanged( String value ) {
-  //   state = state.copyWith(
-  //     slug: Slug.dirty(value),
-  //     isFormValid: Formz.validate([
-  //       Title.dirty(state.title.value),
-  //       Slug.dirty(value),
-  //       Price.dirty(state.price.value),
-  //       Stock.dirty(state.inStock.value),
-  //     ])
-  //   );
-  // }
-
-  // void onPriceChanged( double value ) {
-  //   state = state.copyWith(
-  //     price: Price.dirty(value),
-  //     isFormValid: Formz.validate([
-  //       Title.dirty(state.title.value),
-  //       Slug.dirty(state.slug.value),
-  //       Price.dirty(value),
-  //       Stock.dirty(state.inStock.value),
-  //     ])
-  //   );
-  // }
-
-  // void onStockChanged( int value ) {
-  //   state = state.copyWith(
-  //     inStock: Stock.dirty(value),
-  //     isFormValid: Formz.validate([
-  //       Title.dirty(state.title.value),
-  //       Slug.dirty(state.slug.value),
-  //       Price.dirty(state.price.value),
-  //       Stock.dirty(value),
-  //     ])
-  //   );
-  // }
-
-  // void onSizeChanged( List<String> sizes ) {
-  //   state = state.copyWith(
-  //     sizes: sizes
-  //   );
-  // }
-
-  // void onGenderChanged( String gender ) {
-  //   state = state.copyWith(
-  //     gender: gender
-  //   );
-  // }
-
-  // void onDescriptionChanged( String description ) {
-  //   state = state.copyWith(
-  //     description: description
-  //   );
-  // }
-
-  // void onTagsChanged( String tags ) {
-  //   state = state.copyWith(
-  //     tags: tags
-  //   );
-  // }
+   void onDateInicioChanged( DateTime value ) {
+    state = state.copyWith(
+      fechaInicio: value,
+     
+    );
+  }
+   void onDateFinalChanged( DateTime value ) {
+    state = state.copyWith(
+      fechaFin: value,
+     
+    );
+  }
 
 }
 

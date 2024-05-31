@@ -142,4 +142,41 @@ class TasksDatasourceImpl extends TasksDatasource {
     }
   }
 
+  @override
+  Future<String> getAnswerGemini() async {
+    try {
+      
+      final response = await dio.get('/chat/GeminiAi');
+      final message = response.data;
+      return message;
+
+    } on DioException catch (e) {
+      if ( e.response!.statusCode == 404 ) throw TaskNotFound();
+      throw Exception();
+
+    }catch (e) {
+      throw Exception();
+    }
+  }
+  
+  @override
+  Future<List<Tasks>> getTasks() async {
+     try {
+      final response = await dio.get('/tasks');
+       final List<Tasks> tasks = [];
+     for (final task in response.data ?? [] ) {
+     
+      tasks.add(  TasksMapper.tasksjsonToEntity(task)  );
+    }
+     
+      return tasks;
+    } on DioException catch (e) {
+      if ( e.response!.statusCode == 404 ) throw TaskNotFound();
+      throw Exception();
+
+    }catch (e) {
+      throw Exception();
+    }
+  }
+
 }

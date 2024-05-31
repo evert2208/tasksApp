@@ -5,6 +5,8 @@ abstract class TasksRepository {
 
   Future<List<Task>> getTasksByEstado(String estado);
   Future<Task> getTaskById(String id);
+  Future<List<Tasks>> getTasks();
+   Future<String> getAnswerGemini();
   Future<List<Task>> searchProductByTerm( String term );
   
   Future<Task> createUpdateTask( Map<String,dynamic> taskLike );

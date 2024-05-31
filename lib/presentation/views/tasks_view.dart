@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tasks_app/presentation/providers/auth_provider.dart';
 import 'package:tasks_app/presentation/providers/tasks_provider.dart';
+import 'package:tasks_app/presentation/shared/widgets/widgets.dart';
 
 
 class TasksView extends ConsumerStatefulWidget {
@@ -91,6 +93,7 @@ class _TasksViewState extends ConsumerState with TickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     final tasksState = ref.watch( tasksProvider );
+     final authState = ref.watch( authProvider );
     final colors = Theme.of(context).colorScheme;
     
 
@@ -126,7 +129,9 @@ class _TasksViewState extends ConsumerState with TickerProviderStateMixin{
             child: TabBarView(
               controller: _model,
               children:  [
-                RefreshIndicator(
+              tasksState.isLoading 
+              ? const FullScreenLoader()
+              : RefreshIndicator(
                 onRefresh: getProx,
                 edgeOffset: 10,
                 strokeWidth: 2,
@@ -146,7 +151,9 @@ class _TasksViewState extends ConsumerState with TickerProviderStateMixin{
                   },
                 ),
                ),
-                RefreshIndicator(
+               tasksState.isLoading 
+              ? const FullScreenLoader()
+              : RefreshIndicator(
                 onRefresh: getComp,
                 edgeOffset: 10,
                 strokeWidth: 2,
@@ -174,10 +181,13 @@ class _TasksViewState extends ConsumerState with TickerProviderStateMixin{
         ],
       ),
     ),
-    //  floatingActionButton: FloatingActionButton(
-    //     onPressed: () {},
-    //     child:  const Icon( Icons.add ),
-    //   ),
+     floatingActionButton: authState.user?.role=='ADMIN_ROLE'
+     ? FloatingActionButton(
+        onPressed: () {
+           context.push('/task/new');
+        },
+        child:  const Icon( Icons.add ),
+      ) : null
     );
     
    
@@ -185,105 +195,18 @@ class _TasksViewState extends ConsumerState with TickerProviderStateMixin{
 }
 
 
-class _Card extends StatelessWidget {
-
-  final String label;
-  
-  // final VoidCallback onTap;
-
-  const _Card({
-    super.key,
-    required this.label,
-    
-    // required this.onTap
-  });
-
-  @override
-  Widget build(BuildContext context) {
-
-    final colors = Theme.of(context).colorScheme;
-
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: const BorderRadius.all( Radius.circular(12) ),
-        side: BorderSide(
-          color: colors.primary
-        )
-      ),
-      elevation: 0.7,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                icon: const Icon( Icons.more_vert_outlined),
-                onPressed: () {},
-              ),
-            ),
-
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Text('$label - outline'),
-            )
-
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-
-class _CardType1 extends StatelessWidget {
-
-  final String label;
-  // final double elevation;
-
-  const _CardType1({
-    required this.label,
-    // required this.elevation
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 1.9,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                icon: const Icon( Icons.more_vert_outlined),
-                onPressed: () {},
-              ),
-            ),
-
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Text( label ),
-            )
-
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 
 class TaskCard extends StatelessWidget {
   final String titulo;
   final String direccion;
   final bool estado;
+  final String? asignado;
 
   const TaskCard({super.key, 
     required this.titulo,
     required this.direccion,
     required this.estado,
+    this.asignado
   });
 
   @override
@@ -302,7 +225,7 @@ class TaskCard extends StatelessWidget {
             Text(
               titulo,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -310,12 +233,29 @@ class TaskCard extends StatelessWidget {
             Text(
               direccion,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 20,
               ),
             ),
-            const SizedBox(height: 16),
+             const SizedBox(height: 8),
+            asignado !=null ?  Text(
+                    'Asignado a: $asignado',
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ): const SizedBox(height: 0),
+            const SizedBox(height: 8),
             Row(
               children: [
+                // Container(
+                //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                 
+                //   child: Text(
+                //     'Asignado a: $asignado',
+                //     style: const TextStyle(
+                //       fontSize: 16,
+                //     ),
+                //   ),
+                // ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,7 +37,7 @@ class TaskScreen extends ConsumerWidget {
           title: const Text('tarea'),
           actions: [
 
-            IconButton(onPressed: () async {
+            taskId!='new' ? IconButton(onPressed: () async {
               final photoPath = await CameraGalleryServiceImpl().selectPhoto();
               if ( photoPath == null ) return;
 
@@ -44,22 +45,25 @@ class TaskScreen extends ConsumerWidget {
                 .updateProductImage(photoPath);
     
             }, 
-            icon: const Icon( Icons.photo_library_outlined )),
+            icon: const Icon( Icons.photo_library_outlined )
+            ): const SizedBox(),
 
-            IconButton(onPressed: () async{
+            taskId!='new' ? IconButton(onPressed: () async{
               final photoPath = await CameraGalleryServiceImpl().takePhoto();
               if ( photoPath == null ) return;
 
               ref.read( taskFormProvider(taskState.task!).notifier )
                 .updateProductImage(photoPath);
             }, 
-            icon: const Icon( Icons.camera_alt_outlined ))
+            icon: const Icon( Icons.camera_alt_outlined )
+            ): const SizedBox(),
+
           ],
         ),
     
         body: taskState.isLoading 
           ? const FullScreenLoader()
-          : _TaskView(task: taskState.task! ),
+          : _TaskView(task: taskState.task!, taskId: taskId ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             if ( taskState.task == null ) return;
@@ -83,10 +87,10 @@ class TaskScreen extends ConsumerWidget {
 
 
 class _TaskView extends ConsumerWidget {
-
+  final String taskId;
   final Task task;
 
-  const _TaskView({required this.task});
+  const _TaskView({required this.task, required this.taskId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -98,23 +102,17 @@ class _TaskView extends ConsumerWidget {
 
     return ListView(
       children: [
-    
-          // SizedBox(
-          //   height: 250,
-          //   width: 600,
-          //   child: _ImageGallery(images: productForm.images ),
-          // ),
-    
+
           const SizedBox( height: 10 ),
           Center(
-            child: Text( 
-              taskForm.titulo.value, 
+            child: Text( taskId !='new'?
+              taskForm.titulo.value : 'Nueva tarea', 
               style: textStyles.titleSmall,
               textAlign: TextAlign.center,
             )
           ),
           const SizedBox( height: 10 ),
-          _TaskInformation( task: task ),
+          _TaskInformation( task: task, taskId: taskId ),
           
         ],
     );
@@ -124,7 +122,8 @@ class _TaskView extends ConsumerWidget {
 
 class _TaskInformation extends ConsumerWidget {
   final Task task;
-  const _TaskInformation({required this.task});
+  final String taskId;
+  const _TaskInformation({required this.task, required this.taskId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref ) {
@@ -137,13 +136,17 @@ class _TaskInformation extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Apertura'),
+          const Text('Apertura', style: TextStyle(
+            fontSize: 18,
+           )),
           const SizedBox(height: 15 ),
           CustomTaskField( 
             isTopField: true,
-            label: 'Nombre',
+            label: 'Titulo',
             initialValue: taskForm.titulo.value,
-            enabled: false,
+            enabled: taskId=='new' ? true : false,
+            icon: taskId=='new' ? false : true,
+            onChanged: ref.read( taskFormProvider(task).notifier).onTitleChanged,
           ),
 
          CustomTaskField(
@@ -152,8 +155,9 @@ class _TaskInformation extends ConsumerWidget {
             label: 'Descripción',
             keyboardType: TextInputType.multiline,
             initialValue: task.descripcion,
-            enabled: false,
-            
+           enabled: taskId=='new' ? true : false,
+            icon: taskId=='new' ? false : true,
+            onChanged: ref.read( taskFormProvider(task).notifier).onDescripcionChanged,
           ),
 
           CustomTaskField( 
@@ -162,27 +166,43 @@ class _TaskInformation extends ConsumerWidget {
             label: 'Direccion',
             keyboardType: TextInputType.multiline,
             initialValue: task.direccion,
-            enabled: false,
-           
+            enabled: taskId=='new' ? true : false,
+           icon: taskId=='new' ? false : true,
+           onChanged: ref.read( taskFormProvider(task).notifier).onDireccionChanged,
           ),
 
-            CustomTaskField( 
+          //   CustomTaskField( 
+          //   isTopField: true,
+          //   label: 'Fecha de inicio',
+          //   initialValue: taskForm.fechaInicio.toIso8601String().split('T').first,
+          //   enabled: taskId=='new' ? true : false,
+          //   icon: taskId=='new' ? false : true
+          // ),
+          CustomDateField( 
             isTopField: true,
+            // isBottomField: true,
             label: 'Fecha de inicio',
-            initialValue: taskForm.fechaInicio.toIso8601String().split('T').first,
-            enabled: false,
+            initialValue: taskForm.fechaInicio,
+            fechaInicio: taskForm.fechaInicio,
+             enabled: taskId=='new' ? true : false,
+            icon: taskId=='new' ? false : true, 
+            onChanged: ref.read( taskFormProvider(task).notifier).onDateInicioChanged,
           ),
 
           const SizedBox(height: 15 ),
-          const Text('Seguimiento'),
+          const Text('Seguimiento', style: TextStyle(
+            fontSize: 18,
+           )),
           const SizedBox(height: 15 ),
            CustomDateField( 
             isTopField: true,
             // isBottomField: true,
             label: 'Fecha final',
-            initialValue: taskForm.fechaFin?.toIso8601String().split('T').first,
-            // enabled: true,
-            icon: false,
+            initialValue: taskForm.fechaFin,
+            fechaInicio: taskForm.fechaInicio,
+            enabled: taskId=='new' ? false : true,
+            icon: false, 
+            onChanged: ref.read( taskFormProvider(task).notifier).onDateFinalChanged,
           ),
           CustomTaskField( 
             isTopField: true,
@@ -191,21 +211,29 @@ class _TaskInformation extends ConsumerWidget {
             label: 'Comentarios',
              keyboardType: TextInputType.multiline,
             initialValue: task.comentarios,
+            enabled: taskId=='new' ? false : true,
             icon: false,
-            // onChanged: ref.read( taskFormProvider(task).notifier).onTagsChanged,
+            onChanged: ref.read( taskFormProvider(task).notifier).onComentariosChanged,
           ),
           const SizedBox(height: 15 ),
-           const Text('Evidencia'),
+           const Text('Evidencia', style: TextStyle(
+            fontSize: 18,
+           )),
             const SizedBox(height: 15 ),
-          SizedBox(
+          taskId!='new' ? SizedBox(
             height: 250,
             width: 400,
             child: _ImageGallery(images: taskForm.evidencia ),
-          ),
-          const SizedBox(height: 15 ),
-           const Text('Cierre'),
+          ) : const Text('sin evidencia'),
+          const SizedBox(height: 40 ),
+           const Text('Cierre', style: TextStyle(
+            fontSize: 18,
+           )),
             const SizedBox(height: 15 ),
-            OpenClosedCheckbox(estado: task.estado),
+            OpenClosedCheckbox(estado: task.estado, 
+            taskId: taskId, 
+            onChanged: ref.read( taskFormProvider(task).notifier).onEstadoChanged,
+            ),
             const SizedBox(height: 100 ),
         ],
       ),

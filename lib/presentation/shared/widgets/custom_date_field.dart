@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 
 class CustomDateField extends StatefulWidget {
@@ -12,8 +13,9 @@ class CustomDateField extends StatefulWidget {
   final int maxLines;
   final bool enabled;
   final bool? icon;
-  final String? initialValue;
-  final Function(String)? onChanged;
+  final DateTime? initialValue;
+  final DateTime? fechaInicio;
+  final Function(DateTime) onChanged;
   final Function(String)? onFieldSubmitted;
   final String? Function(String?)? validator;
 
@@ -28,7 +30,8 @@ class CustomDateField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.maxLines = 1,
     this.initialValue,
-    this.onChanged,
+    required this.fechaInicio,
+    required this.onChanged,
     this.onFieldSubmitted,
     this.validator,
     this.enabled = true,
@@ -41,14 +44,13 @@ class CustomDateField extends StatefulWidget {
 
 class _CustomDateFieldState extends State<CustomDateField> {
   final TextEditingController _dateController = TextEditingController();
-  DateTime? _selectedDate;
+  
 
-  @override
+ @override
   void initState() {
     super.initState();
     if (widget.initialValue != null) {
-      _dateController.text = widget.initialValue!;
-      _selectedDate = DateTime.tryParse(widget.initialValue!);
+      _dateController.text = DateFormat('yyyy-MM-dd').format(widget.initialValue!);
     }
   }
 
@@ -58,21 +60,18 @@ class _CustomDateFieldState extends State<CustomDateField> {
     super.dispose();
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+ Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
+      initialDate: widget.initialValue ?? DateTime.now(),
+      firstDate: widget.fechaInicio ?? DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null) {
       setState(() {
-        _selectedDate = picked;
-        _dateController.text = _selectedDate!.toIso8601String().split('T').first;
+         _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
-      if (widget.onChanged != null) {
-        widget.onChanged!(_dateController.text);
-      }
+      widget.onChanged(picked);
     }
   }
 
@@ -106,7 +105,7 @@ class _CustomDateFieldState extends State<CustomDateField> {
       ),
       child: TextFormField(
         controller: _dateController,
-        onChanged: widget.onChanged,
+        // onChanged: widget.onChanged,
         onFieldSubmitted: widget.onFieldSubmitted,
         validator: widget.validator,
         enabled: widget.enabled,
@@ -127,6 +126,7 @@ class _CustomDateFieldState extends State<CustomDateField> {
           errorText: widget.errorMessage,
           focusColor: colors.primary,
           suffixIcon: const Icon(Icons.calendar_today),
+          icon: widget.icon != null && widget.icon==true ? const Icon( Icons.check, color: Colors.green) : null,
         ),
         readOnly: true,
         onTap: () => _selectDate(context),
